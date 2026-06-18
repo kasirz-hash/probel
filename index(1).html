@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Пробелы для Instagram</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html {
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #111827;
+      color: #ffffff;
+      font-size: 13px;
+    }
+
+    .app {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 14px;
+    }
+
+    h1 {
+      font-size: 20px;
+      line-height: 1.2;
+      margin: 0 0 8px;
+      text-align: center;
+      font-weight: 700;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #cbd5e1;
+      font-size: 12px;
+      line-height: 1.35;
+      margin-bottom: 14px;
+    }
+
+    .label {
+      font-size: 12px;
+      margin: 10px 0 6px;
+      color: #e5e7eb;
+      font-weight: 700;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 170px;
+      resize: vertical;
+      border: none;
+      border-radius: 12px;
+      padding: 10px;
+      font-size: 14px;
+      line-height: 1.35;
+      outline: none;
+      background: #ffffff;
+      color: #111827;
+      margin-bottom: 10px;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 10px;
+      border: none;
+      font-size: 13px;
+      margin-bottom: 10px;
+      background: #ffffff;
+      color: #111827;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    button {
+      width: 100%;
+      border: none;
+      border-radius: 12px;
+      padding: 12px;
+      font-size: 13px;
+      line-height: 1.2;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .main-btn {
+      background: #f97316;
+      color: #ffffff;
+    }
+
+    .copy-btn {
+      background: #22c55e;
+      color: #ffffff;
+    }
+
+    .select-btn {
+      background: #2563eb;
+      color: #ffffff;
+    }
+
+    .clear-btn {
+      background: #374151;
+      color: #ffffff;
+    }
+
+    .status {
+      min-height: 18px;
+      text-align: center;
+      color: #86efac;
+      font-size: 12px;
+      line-height: 1.3;
+      margin: 6px 0 10px;
+    }
+
+    .info {
+      background: #1f2937;
+      border-radius: 12px;
+      padding: 10px;
+      color: #d1d5db;
+      font-size: 11px;
+      line-height: 1.4;
+      margin-top: 10px;
+    }
+
+    .counter {
+      color: #9ca3af;
+      font-size: 11px;
+      text-align: right;
+      margin-top: -6px;
+      margin-bottom: 8px;
+    }
+
+    @media (min-width: 520px) {
+      .buttons {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .main-btn {
+        grid-column: span 2;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <h1>Пробелы для Instagram</h1>
+
+    <div class="subtitle">
+      Вставьте текст — приложение заменит пустые строки на невидимый пробел.
+      Instagram сохранит отступы между абзацами.
+    </div>
+
+    <div class="label">Исходный текст</div>
+    <textarea id="inputText" placeholder="Вставьте сюда текст..."></textarea>
+    <div class="counter" id="inputCounter">0 символов</div>
+
+    <div class="label">Символ для пустых строк</div>
+    <select id="spaceType">
+      <option value="braille" selected>Невидимый пробел — лучше для Instagram</option>
+      <option value="nbsp">Неразрывный пробел</option>
+      <option value="space">Обычный пробел</option>
+    </select>
+
+    <div class="buttons">
+      <button class="main-btn" onclick="processText()">Добавить пробелы</button>
+      <button class="copy-btn" onclick="copyResult()">Скопировать</button>
+      <button class="select-btn" onclick="selectResult()">Выделить</button>
+      <button class="clear-btn" onclick="clearAll()">Очистить</button>
+    </div>
+
+    <div class="status" id="status"></div>
+
+    <div class="label">Готовый текст</div>
+    <textarea id="outputText" placeholder="Здесь появится готовый текст..."></textarea>
+    <div class="counter" id="outputCounter">0 символов</div>
+
+    <div class="info">
+      <b>Важно:</b> пустые строки будут выглядеть пустыми, но внутри будет невидимый символ.
+      Поэтому Instagram обычно не удаляет такие отступы при вставке текста.
+    </div>
+  </div>
+
+  <script>
+    const inputText = document.getElementById("inputText");
+    const outputText = document.getElementById("outputText");
+    const inputCounter = document.getElementById("inputCounter");
+    const outputCounter = document.getElementById("outputCounter");
+    const statusBox = document.getElementById("status");
+
+    function getSelectedSpace() {
+      const type = document.getElementById("spaceType").value;
+
+      if (type === "braille") {
+        return "⠀"; // U+2800, невидимый символ Брайля
+      }
+
+      if (type === "nbsp") {
+        return "\u00A0"; // неразрывный пробел
+      }
+
+      return " "; // обычный пробел
+    }
+
+    function updateCounters() {
+      inputCounter.textContent = inputText.value.length + " символов";
+      outputCounter.textContent = outputText.value.length + " символов";
+    }
+
+    function processText() {
+      const input = inputText.value;
+      const invisibleSpace = getSelectedSpace();
+
+      if (input.length === 0) {
+        statusBox.textContent = "Сначала вставьте текст.";
+        return;
+      }
+
+      const normalizedText = input.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+
+      const result = normalizedText
+        .split("\n")
+        .map(function(line) {
+          return line.trim() === "" ? invisibleSpace : line;
+        })
+        .join("\n");
+
+      outputText.value = result;
+      statusBox.textContent = "Готово. Можно копировать.";
+      updateCounters();
+    }
+
+    async function copyResult() {
+      if (outputText.value.length === 0) {
+        statusBox.textContent = "Сначала нажмите «Добавить пробелы».";
+        return;
+      }
+
+      try {
+        await navigator.clipboard.writeText(outputText.value);
+        statusBox.textContent = "Скопировано.";
+      } catch (error) {
+        selectResult();
+        document.execCommand("copy");
+        statusBox.textContent = "Скопировано. Если не сработало — нажмите «Выделить» и скопируйте вручную.";
+      }
+    }
+
+    function selectResult() {
+      if (outputText.value.length === 0) {
+        statusBox.textContent = "Сначала нажмите «Добавить пробелы».";
+        return;
+      }
+
+      outputText.focus();
+      outputText.select();
+      outputText.setSelectionRange(0, outputText.value.length);
+      statusBox.textContent = "Текст выделен. Нажмите «Копировать» на телефоне.";
+    }
+
+    function clearAll() {
+      inputText.value = "";
+      outputText.value = "";
+      statusBox.textContent = "";
+      updateCounters();
+    }
+
+    inputText.addEventListener("input", updateCounters);
+    outputText.addEventListener("input", updateCounters);
+    updateCounters();
+  </script>
+</body>
+</html>
